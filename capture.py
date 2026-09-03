@@ -8,8 +8,8 @@ import config
 from runtime import Runtime
 
 
-TSHARK = "/Applications/Wireshark.app/Contents/MacOS/tshark"
-GEOIP_DIR = "/Users/jacksonromie/GeoIP/GeoLite2-Country_20260901"
+TSHARK = "/usr/bin/tshark"
+GEOIP_DIR = "/home/jackson/GeoIP/"
 
 LOCAL_REG = r'(192).+|(172).+|(127).+|(10).+'
 
