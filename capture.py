@@ -165,7 +165,7 @@ class Capture:
                 src_iso = pkt.src_iso
                 dst_iso = pkt.src_iso
                 
-                if src_iso in country_blacklist.keys() or dst_iso in country_blacklist.keys() or src_iso == "US" or dst_iso == "US":
+                if src_iso in country_blacklist.keys() or dst_iso in country_blacklist.keys():
                     print(f"ALERT: Packet captured communicating to/from {pkt.src_country or pkt.dst_country}.")
                     device_name = device_mapping.get(pkt.src_mac.upper()) or device_mapping.get(pkt.dst_mac.upper())
                     if device_name:
