@@ -189,7 +189,7 @@ class Capture:
                 dst_iso = pkt.src_iso
                 
                 now = time.time()
-                if (now - self._last_arp_scan) / 60 >= 15:
+                if (now - self._last_arp_scan) / 60 >= config.ARP_SCAN_FREQUENCY:
                     self.run_arp_scan()
                 
                 if src_iso in country_blacklist.keys() or dst_iso in country_blacklist.keys():
