@@ -40,7 +40,7 @@ I got a GeoLite membership with Maxmind. They have managed database files you ca
 
 The script will then loop over a stream of packet data, and log any packets that fall under the "blacklist" of countries to a json file called the `device_naughty_list`.
 
-The device mapping (just a json file mapping macs to device names) as well as the country blacklist (just a mapping of iso codes to the country names I want to alert on), are stored in AWS parameter store.
+The device mapping (just a json file mapping MAC addresses to device names) as well as the country blacklist (mapping of iso codes to the country names I want to alert on), are stored in AWS parameter store.
 
 ## Setup
 To run this on your own device (presumably a Raspberry Pi), this should get you started:
