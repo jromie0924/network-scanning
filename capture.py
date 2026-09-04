@@ -190,20 +190,14 @@ class Capture:
                 if (now - self._last_arp_scan) / 60 >= 15:
                     self.run_arp_scan()
                 
-                if src_iso in country_blacklist.keys() or dst_iso in country_blacklist.keys(): # or pkt.src_iso == "US" or pkt.dst_iso == "US":
+                if src_iso in country_blacklist.keys() or dst_iso in country_blacklist.keys():
                     logger.info(f"ALERT: Packet captured communicating to/from {pkt.src_country or pkt.dst_country}.")
-                    
                     timestamp = datetime.now().isoformat()
                     
-                    # device_name = device_mapping.get(pkt.src_mac.upper()) or device_mapping.get(pkt.dst_mac.upper())
-                    # if src_iso in country_blacklist.keys():
-                    #     device_name = device_mapping.get(pkt.dst_mac.upper())
-                    # else:
-                    #     device_name = device_mapping.get(pkt.src_mac.upper())
-                    if pkt.src_mac in self._runtime.local_device_list.keys():
-                        device_name = device_mapping.get(pkt.src_mac)
+                    if self._runtime.local_device_list.get(pkt.src_mac.upper()):
+                        device_name = device_mapping.get(pkt.src_mac.upper())
                     else:
-                        device_name = device_mapping.get(pkt.dst_mac)
+                        device_name = device_mapping.get(pkt.dst_mac.upper())
                     if device_name:
                         logger.info(f"Device identified: {device_name}.")
                     else:

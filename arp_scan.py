@@ -1,9 +1,13 @@
 from dataclasses import dataclass
+import json
 import re
 import subprocess
+import logging
 
 import config
 
+
+logger = logging.getLogger(config.APP_NAME)
 
 ARP_SCAN = "arp-scan"
 
@@ -64,10 +68,11 @@ class ArpScan:
         return hosts
 
     def mac_to_ip(self, sudo: bool | None = None) -> dict[str, str]:
+        if config.BYPASS_ARP_SCAN:
+            try:
+                with open("arp_scan.json", 'r') as file:
+                    return json.load(file)
+            except FileNotFoundError:
+                logger.critical("arp_scan.json not found. Exiting.")
+                exit(1)
         return {host.mac: host.ip for host in self.hosts(sudo=sudo)}
-
-
-# if __name__ == "__main__":
-#     import json
-
-#     print(json.dumps(ArpScan().mac_to_ip(), indent=2))

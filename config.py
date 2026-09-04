@@ -12,5 +12,6 @@ SCANNING_INTERFACE = "eth0"
 
 ARP_SCAN_SUDO = False
 ARP_SCAN_FREQUENCY = 2 # minutes
+BYPASS_ARP_SCAN = False
 
 NAUGHTY_LIST = "device_naughty_list.json"
