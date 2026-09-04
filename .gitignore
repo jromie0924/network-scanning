@@ -219,4 +219,4 @@ __marimo__/
 # Streamlit
 .streamlit/secrets.toml
 
-*.json
+device_naughty_list.json
