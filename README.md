@@ -36,11 +36,11 @@ Passive network scanning tool designed to detect devices communicating with ques
 
 
 ### How foreign IPs are identified
-I got a GeoLite membership with Maxmind. They have managed database files you can grab twice weekly, which I just do manually. I'm sure there's a way for me to automate this, but I havne't gotten around to figuring that out yet. The database will allow `tshark` to identify an IP address's country of origin.
+I got a GeoLite membership with Maxmind. They have managed database files you can grab twice weekly, which I just do manually. I'm sure there's a way for me to automate this, but I haven't gotten around to figuring that out yet. The database will allow `tshark` to identify an IP address's country of origin.
 
 The script will then loop over a stream of packet data, and log any packets that fall under the "blacklist" of countries to a json file called the `device_naughty_list`.
 
-The naughty list, as well as a device mapping (just a json file mapping macs to device names) are stored in AWS parameter store.
+The device mapping (just a json file mapping macs to device names) as well as the country blacklist (just a mapping of iso codes to the country names I want to alert on), are stored in AWS parameter store.
 
 ## Setup
 To run this on your own device (presumably a Raspberry Pi), this should get you started:
