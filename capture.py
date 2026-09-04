@@ -19,6 +19,8 @@ logger = logging.getLogger(config.APP_NAME)
 
 TSHARK = "/usr/bin/tshark"
 GEOIP_DIR = "/home/jackson/GeoIP/"
+# TSHARK = "/Applications/Wireshark.app/Contents/MacOS/tshark"
+# GEOIP_DIR = "/Users/jacksonromie/GeoIP/GeoLite2-Country_20260901"
 
 LOCAL_REG = r'(192).+|(172).+|(127).+|(10).+'
 
