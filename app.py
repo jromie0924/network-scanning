@@ -76,7 +76,7 @@ if __name__ == "__main__":
     runtime = Runtime(system_mapping=system_mapping, country_mapping=country_blacklist_mapping)
         
     
-    capture = Capture()
+    capture = Capture()    
     total_packets = capture.scan()
     
     logger.info(f"Captured {total_packets} packets.")

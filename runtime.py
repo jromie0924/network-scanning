@@ -12,6 +12,7 @@ class Runtime(object):
         self._initialized = True
         self._system_mapping = system_mapping
         self._country_mapping = country_mapping
+        self._local_device_list = {}
     
     @property
     def system_mapping(self):
@@ -20,3 +21,11 @@ class Runtime(object):
     @property
     def country_mapping(self):
         return self._country_mapping
+    
+    @property
+    def local_device_list(self):
+        return self._local_device_list
+    
+    @local_device_list.setter
+    def local_device_list(self, new_list):
+        self._local_device_list = new_list

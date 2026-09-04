@@ -5,13 +5,23 @@ After=network-online.target
 
 
 [Service]
-Environment="PATH=/home/jackson/.local/bin:/usr/local/bin:/usr/bin:/bin"
+Environment="PATH=/home/jackson/.local/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin"
 Type=simple
 RemainAfterExit=no
 ExecStart=/home/jackson/network-scanning/start.sh
 Restart=no
 User=jackson
 Group=jackson
+
+# arp-scan opens a raw PF_PACKET socket, which the unprivileged jackson user cannot
+# do. Granting the capability ambiently lets it inherit down start.sh -> pipenv ->
+# python -> arp-scan, so the app needs no sudo.
+AmbientCapabilities=CAP_NET_RAW
+# dumpcap (which tshark execs) has cap_net_raw,cap_net_admin+eip. File caps outside
+# the bounding set cannot be picked up, and the set effective bit makes that a hard
+# EPERM on exec rather than a partial grant -- so NET_ADMIN must stay in the set even
+# though nothing here is granted it ambiently.
+CapabilityBoundingSet=CAP_NET_RAW CAP_NET_ADMIN
 
 [Install]
 WantedBy=multi-user.target
