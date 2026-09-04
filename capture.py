@@ -34,6 +34,7 @@ COLUMNS = [field for fields in FIELDS.values() for field in fields]
 
 GEO_ONLY = "ip.geoip.country or ipv6.geoip.country"
 
+# TODO - probably could delete this.
 PUBLIC_ONLY = (
     "not net 10.0.0.0/8 "
     "and not net 172.16.0.0/12 "
