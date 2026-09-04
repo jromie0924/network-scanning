@@ -8,7 +8,7 @@ LOG_FILE = "logs/network-scanner.log"
 AWS_SECRET = f'{os.environ.get("HOME", "/home/jackson")}/.aws_secret/network_scanner_app_accessKeys.csv'
 AWS_REGION = "us-east-2"
 
-SCANNING_INTERFACE = "en0"
+SCANNING_INTERFACE = "eth0"
 
 ARP_SCAN_SUDO = False
 ARP_SCAN_FREQUENCY = 2 # minutes
