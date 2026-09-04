@@ -2,6 +2,8 @@
 
 Passive network scanning tool designed to detect devices communicating with questionable foreign countries.
 
+Mostly just for fun.
+
 ## Basic network topology:
                      ┌─────────────┐
                      │  Internet   │
