@@ -79,7 +79,7 @@ class Capture:
             self._last_arp_scan = now
             local_device_list = ArpScan().mac_to_ip()
             self._runtime.local_device_list = local_device_list
-        logger.debug(f"arp scan result: {self._runtime.local_device_list}")
+            logger.debug(f"arp scan result: {self._runtime.local_device_list}")
     
     @staticmethod
     def _parse(line: str) -> GeoPacket:
@@ -193,8 +193,9 @@ class Capture:
                 if src_iso in country_blacklist.keys() or dst_iso in country_blacklist.keys():
                     logger.info(f"ALERT: Packet captured communicating to/from {pkt.src_country or pkt.dst_country}.")
                     timestamp = datetime.now().isoformat()
-                    
-                    if self._runtime.local_device_list.get(pkt.src_mac.upper()):
+                    with self._lock:
+                        local_device_list = self._runtime.local_device_list
+                    if local_device_list.get(pkt.src_mac.upper()):
                         device_name = device_mapping.get(pkt.src_mac.upper())
                     else:
                         device_name = device_mapping.get(pkt.dst_mac.upper())
