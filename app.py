@@ -1,11 +1,41 @@
+from logging.handlers import TimedRotatingFileHandler
+import sys
+
 import boto3
 from capture import Capture
 import config
 import csv
 import json
+import logging
+import os
 
 from runtime import Runtime
 
+def init_logger():
+    logger = logging.getLogger(config.APP_NAME)
+    logger.setLevel(config.LOGGING_LEVEL)
+    
+    # Create log directory if it doesn't exist
+    dir = os.path.dirname(config.LOG_FILE)
+    os.makedirs(dir, exist_ok=True)
+    
+    # Log formatter
+    formatter = logging.Formatter('[%(asctime)s] [%(levelname)s] [%(module)s] %(message)s', datefmt='%Y-%m-%d %H:%M:%S')
+
+    # Stream handler (sys.stdout) for console output
+    stream_handler = logging.StreamHandler(sys.stdout)
+    stream_handler.setFormatter(formatter)
+    
+    # Timed rotating file handler
+    # Rotates log files daily at midnight
+    # Will keep 30 days of log files
+    # Older log files will be automatically deleted
+    file_handler = TimedRotatingFileHandler(config.LOG_FILE, when='midnight', interval=1, backupCount=30)
+    file_handler.setFormatter(formatter)
+    
+    # Add handlers to the logger
+    logger.addHandler(file_handler)
+    logger.addHandler(stream_handler)
 
 def parse_secret(secret) -> dict:
     ACCESS_KEY_ID_NAME = 'Access key ID'
@@ -21,6 +51,10 @@ def parse_secret(secret) -> dict:
     return secret_dict
 
 if __name__ == "__main__":
+    init_logger()
+    logger = logging.getLogger(config.APP_NAME)
+    logger.info("Starting network scanner...")
+    
     secret_file = config.AWS_SECRET
     secrets = parse_secret(secret_file)
     ssm_client = boto3.client("ssm",
@@ -45,4 +79,4 @@ if __name__ == "__main__":
     capture = Capture()
     total_packets = capture.scan()
     
-    print(f"Captured {total_packets} packets.")
+    logger.info(f"Captured {total_packets} packets.")

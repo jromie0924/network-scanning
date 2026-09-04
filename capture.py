@@ -1,5 +1,7 @@
 from dataclasses import asdict, dataclass
+from datetime import datetime
 import json
+import logging
 import re
 import subprocess
 from typing import Iterator
@@ -7,6 +9,8 @@ from typing import Iterator
 import config
 from runtime import Runtime
 
+
+logger = logging.getLogger(config.APP_NAME)
 
 TSHARK = "/usr/bin/tshark"
 GEOIP_DIR = "/home/jackson/GeoIP/"
@@ -165,14 +169,17 @@ class Capture:
                 src_iso = pkt.src_iso
                 dst_iso = pkt.src_iso
                 
-                if src_iso in country_blacklist.keys() or dst_iso in country_blacklist.keys():
-                    print(f"ALERT: Packet captured communicating to/from {pkt.src_country or pkt.dst_country}.")
+                if src_iso in country_blacklist.keys() or dst_iso in country_blacklist.keys(): # or pkt.src_iso == "US" or pkt.dst_iso == "US":
+                    logger.info(f"ALERT: Packet captured communicating to/from {pkt.src_country or pkt.dst_country}.")
+                    
+                    timestamp = datetime.now().isoformat()
+                    
                     device_name = device_mapping.get(pkt.src_mac.upper()) or device_mapping.get(pkt.dst_mac.upper())
                     if device_name:
-                        print(f"Device identified: {device_name}.")
+                        logger.info(f"Device identified: {device_name}.")
                     else:
-                        print(f"Device unrecognized. Source MAC Address: {pkt.src_mac} || Destination MAC Address: {pkt.dst_mac}")
-                    print(f"Full packet metadata:\n{pkt}")
+                        logger.warning(f"Device unrecognized. Source MAC Address: {pkt.src_mac} || Destination MAC Address: {pkt.dst_mac}")
+                    logger.debug(f"Full packet metadata:\n{pkt}")
                     try:
                         file = open(config.NAUGHTY_LIST, 'r')
                         naughty_list = json.load(file)
@@ -186,6 +193,7 @@ class Capture:
                         else:
                             device_name = "UNKNOWN"
                     packet_json = asdict(pkt)
+                    packet_json["timestamp"] = timestamp
                     if device_name in naughty_list.keys():
                         naughty_list[device_name].append(packet_json)
                     else:
@@ -197,7 +205,7 @@ class Capture:
                         
                     
         except KeyboardInterrupt:
-            print("Scan stopped")
+            logger.info(f"Scan stopped. Intercepted {total} packets.")
         
 
                 

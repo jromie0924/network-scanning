@@ -1,0 +1,17 @@
+[Unit]
+Description=Network Scanning Service
+Wants=network-online.target
+After=network-online.target
+
+
+[Service]
+Environment="PATH=/home/jackson/.local/bin:/usr/local/bin:/usr/bin:/bin"
+Type=simple
+RemainAfterExit=no
+ExecStart=/home/jackson/network-scanning/start.sh
+Restart=no
+User=jackson
+Group=jackson
+
+[Install]
+WantedBy=multi-user.target
