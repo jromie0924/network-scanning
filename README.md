@@ -2,7 +2,7 @@
 
 Passive network scanning tool designed to detect devices communicating with questionable foreign countries.
 
-### Basic network topology:
+## Basic network topology:
                      ┌─────────────┐
                      │  Internet   │
                      └──────┬──────┘
@@ -42,3 +42,11 @@ The script will then loop over a stream of packet data, and log any packets that
 
 The naughty list, as well as a device mapping (just a json file mapping macs to device names) are stored in AWS parameter store.
 
+## Setup
+To run this on your own device (presumably a Raspberry Pi), this should get you started:
+
+1. `sudo apt install tshark`
+2. I am using AWS to store the device mapping and country blacklist, but you can easily just store them locally as json config files.
+3. Create a (free) GeoLite account on [Maxmind](https://www.maxmind.com/en/home). You can then download the up-to-date geo-ip databases (I use the country one, non-csv). Then store just the `.mmdb` file in `$HOME/GeoIP`
+4. If you're using AWS you'll need to install `boto3`. You can either use pipenv, or any other venv manager, or just install it globally on your system. I'd recommend a virtual environment though.
+5. Then just run `python app.py`. You'll want to make sure that the interface in [config.py](config.py) matches the interface of your device that will be scanning the network.
