@@ -30,7 +30,7 @@ def init_logger():
     # Rotates log files daily at midnight
     # Will keep 30 days of log files
     # Older log files will be automatically deleted
-    file_handler = TimedRotatingFileHandler(config.LOG_FILE, when='midnight', interval=1, backupCount=30)
+    file_handler = TimedRotatingFileHandler(config.LOG_FILE, when='midnight', interval=1, backupCount=2)
     file_handler.setFormatter(formatter)
     
     # Add handlers to the logger
@@ -63,20 +63,30 @@ if __name__ == "__main__":
                               region_name=config.AWS_REGION)
     
     system_mapping_parameter = ssm_client.get_parameter(Name="/network-scanning/device-map")
-    system_mapping = None
+    device_mapping = None
     if system_mapping_parameter and system_mapping_parameter.get("Parameter"):
-        system_mapping = json.loads(system_mapping_parameter.get("Parameter").get("Value"))
-        # runtime = Runtime(system_mapping=system_mapping)
+        device_mapping = json.loads(system_mapping_parameter.get("Parameter").get("Value"))
+    
+    device_filter_mapping_parameter = ssm_client.get_parameter(Name="/network-scanning/device-whitelist")
+    device_filter_mapping = None
+    if device_filter_mapping_parameter and device_filter_mapping_parameter.get("Parameter"):
+        device_filter_mapping = json.loads(device_filter_mapping_parameter.get("Parameter").get("Value"))
     
     country_blacklist_mapping_parameter = ssm_client.get_parameter(Name="/network-scanning/country-map")
     country_blacklist_mapping = None
     if country_blacklist_mapping_parameter and country_blacklist_mapping_parameter.get("Parameter"):
         country_blacklist_mapping = json.loads(country_blacklist_mapping_parameter.get("Parameter").get("Value"))
     
-    runtime = Runtime(system_mapping=system_mapping, country_mapping=country_blacklist_mapping)
+    runtime = Runtime(device_mapping = device_mapping,
+                      device_filter_mapping=device_filter_mapping,
+                      country_mapping=country_blacklist_mapping)
         
     
-    capture = Capture()    
-    total_packets = capture.scan()
+    capture = Capture()
+    
+    try:
+        total_packets = capture.scan()
+    except Exception:
+        logger.error("Exception encountered.", exc_info=True)
     
     logger.info(f"Captured {total_packets} packets.")

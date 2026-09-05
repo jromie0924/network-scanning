@@ -158,7 +158,7 @@ class Capture:
     @staticmethod
     def iter_live(
         interface: str,
-        display_filter: str = GEO_ONLY,
+        display_filter: str | None = GEO_ONLY,
         capture_filter: str | None = None, # was PUBLIC_ONLY
         duration: int | None = None,
         packet_count: int | None = None,
@@ -177,10 +177,10 @@ class Capture:
     
     def scan(self):
         country_blacklist = self._runtime.country_mapping
-        device_mapping = self._runtime.system_mapping
+        device_mapping = self._runtime.device_mapping
+        device_filter_mapping = self._runtime.device_filter_mapping
         
         packets = Capture.iter_live(interface=self._interface)
-        
         total = 0
         try:
             for pkt in packets:
@@ -191,16 +191,25 @@ class Capture:
                 now = time.time()
                 if (now - self._last_arp_scan) / 60 >= config.ARP_SCAN_FREQUENCY:
                     self.run_arp_scan()
+                    
+                journey = f"{device_mapping.get(pkt.src_mac.upper()) or pkt.src_mac} ({pkt.src}) -> {device_mapping.get(pkt.dst_mac.upper()) or pkt.dst_mac} ({pkt.dst})"
+                logger.debug(f"Packet captured: {journey}")
                 
-                if src_iso in country_blacklist.keys() or dst_iso in country_blacklist.keys():
+                # Only care about devices configured in the filter mapping.
+                if not (self._runtime.device_filter_mapping.get(pkt.src_mac.upper()) or self._runtime.device_filter_mapping.get(pkt.dst_mac.upper())):
+                    continue
+                
+                logger.info(f"Captured packet made it through the device filter: {journey}")
+
+                if country_blacklist.get(src_iso) or country_blacklist.get(dst_iso):
                     logger.info(f"ALERT: Packet captured communicating to/from {pkt.src_country or pkt.dst_country}.")
                     timestamp = datetime.now().isoformat()
                     with self._lock:
                         local_device_list = self._runtime.local_device_list
                     if local_device_list.get(pkt.src_mac.upper()):
-                        device_name = device_mapping.get(pkt.src_mac.upper())
+                        device_name = device_filter_mapping.get(pkt.src_mac.upper())
                     else:
-                        device_name = device_mapping.get(pkt.dst_mac.upper())
+                        device_name = device_filter_mapping.get(pkt.dst_mac.upper())
                     if device_name:
                         logger.info(f"Device identified: {device_name}.")
                     else:

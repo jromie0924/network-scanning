@@ -6,17 +6,22 @@ class Runtime(object):
             class_._instances[class_] = super(Runtime, class_).__new__(class_)
         return class_._instances[class_]
     
-    def __init__(self, system_mapping: dict=None, country_mapping: dict=None):
+    def __init__(self, device_mapping: dict=None, device_filter_mapping: dict=None, country_mapping: dict=None):
         if hasattr(self, '_initialized'):
             return None
         self._initialized = True
-        self._system_mapping = system_mapping
+        self._device_mapping = device_mapping
+        self._device_filter_mapping = device_filter_mapping
         self._country_mapping = country_mapping
         self._local_device_list = {}
     
     @property
-    def system_mapping(self):
-        return self._system_mapping
+    def device_mapping(self):
+        return self._device_mapping
+    
+    @property
+    def device_filter_mapping(self):
+        return self._device_filter_mapping
     
     @property
     def country_mapping(self):
